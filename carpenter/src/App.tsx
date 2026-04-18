@@ -14,6 +14,7 @@ import Credit from "./pages/Credit";
 import Purchases from "./pages/Purchases";
 import Suppliers from "./pages/Suppliers";
 import Expenses from "./pages/Expenses";
+import BonusPage from "./pages/Bonus";
 import Customers from "./pages/Customers";
 import Orders from "./pages/Orders";
 import Reports from "./pages/Reports";
@@ -44,6 +45,7 @@ function Shell() {
     case "purchases": content = <Purchases />; break;
     case "suppliers": content = <Suppliers />; break;
     case "expenses": content = <Expenses />; break;
+    case "bonus": content = <BonusPage />; break;
     case "customers": content = <Customers />; break;
     case "orders": content = <Orders />; break;
     case "reports": content = <Reports />; break;

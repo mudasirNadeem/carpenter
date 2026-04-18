@@ -4,7 +4,7 @@ import { can } from "./types";
 import { useNotifications } from "./notifications";
 import ChangePasswordModal from "./ChangePasswordModal";
 
-export type PageKey = "dashboard" | "products" | "inventory" | "sales" | "credit" | "purchases" | "suppliers" | "expenses" | "customers" | "orders" | "reports" | "users" | "settings";
+export type PageKey = "dashboard" | "products" | "inventory" | "sales" | "credit" | "purchases" | "suppliers" | "expenses" | "bonus" | "customers" | "orders" | "reports" | "users" | "settings";
 
 const NAV: { key: PageKey; label: string; perm: string; badge?: "lowStock" | "pendingOrders" }[] = [
   { key: "dashboard",  label: "Dashboard",  perm: "products.view" },
@@ -16,6 +16,7 @@ const NAV: { key: PageKey; label: string; perm: string; badge?: "lowStock" | "pe
   // { key: "purchases",  label: "Purchases",  perm: "purchases.view" },
   // { key: "suppliers",  label: "Suppliers",  perm: "suppliers.view" },
   { key: "expenses",   label: "Expenses",   perm: "expenses.view" },
+  { key: "bonus",      label: "Bonus",      perm: "bonuses.view" },
   { key: "customers",  label: "Customers",  perm: "customers.view" },
   { key: "orders",     label: "Orders",     perm: "orders.view", badge: "pendingOrders" },
   { key: "reports",    label: "Reports",    perm: "reports.view" },

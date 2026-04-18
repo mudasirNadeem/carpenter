@@ -54,9 +54,18 @@ export default function Dashboard() {
     );
     const todayE = await db.select<any[]>("SELECT COALESCE(SUM(amount),0) as e FROM expenses WHERE date(created_at)=date('now','localtime')");
     const due = await db.select<any[]>("SELECT COALESCE(SUM(total - paid),0) as d FROM sales WHERE payment_status <> 'paid'");
+    const bonusTotal = await db.select<any[]>("SELECT COALESCE(SUM(amount),0) as b FROM bonuses");
+    const bonusToday = await db.select<any[]>("SELECT COALESCE(SUM(amount),0) as b FROM bonuses WHERE received_date = date('now','localtime')");
     setData({
-      totalSales: t[0].s, totalProfit: t[0].p, totalExpenses: e[0].e, stockCount: sc[0].q, outstanding: due[0].d,
-      todaySales: today[0].s, todayProfit: today[0].p, todayExpenses: todayE[0].e, todaySalesCount: today[0].n,
+      totalSales: t[0].s,
+      totalProfit: t[0].p + bonusTotal[0].b,
+      totalExpenses: e[0].e,
+      stockCount: sc[0].q,
+      outstanding: due[0].d,
+      todaySales: today[0].s,
+      todayProfit: today[0].p + bonusToday[0].b,
+      todayExpenses: todayE[0].e,
+      todaySalesCount: today[0].n,
     });
     setLowStock(await db.select<Product[]>("SELECT * FROM products WHERE quantity <= low_stock_threshold ORDER BY quantity ASC LIMIT 10"));
     setRecentOrders(await db.select<Order[]>("SELECT * FROM orders WHERE status IN ('pending','in_progress') ORDER BY id DESC LIMIT 10"));
@@ -74,9 +83,14 @@ export default function Dashboard() {
       "SELECT strftime('%Y-%m', created_at) as m, COALESCE(SUM(total),0) as s, COALESCE(SUM(profit),0) as p FROM sales GROUP BY m",
     );
     const monthMap = new Map(monthRows.map((r) => [r.m, { s: r.s, p: r.p }]));
+    const bonusMonthRows = await db.select<{ m: string; b: number }[]>(
+      "SELECT strftime('%Y-%m', received_date) as m, COALESCE(SUM(amount),0) as b FROM bonuses GROUP BY m",
+    );
+    const bonusMonthMap = new Map(bonusMonthRows.map((r) => [r.m, r.b]));
     setMonthly(lastNMonths(12).map((m) => {
       const x = monthMap.get(m) ?? { s: 0, p: 0 };
-      return { month: m.slice(5) + "/" + m.slice(2, 4), sales: x.s, profit: x.p };
+      const bonus = bonusMonthMap.get(m) ?? 0;
+      return { month: m.slice(5) + "/" + m.slice(2, 4), sales: x.s, profit: x.p + bonus };
     }));
 
     const catRows = await db.select<{ category: string; total: number }[]>(

@@ -288,44 +288,128 @@ export default function Sales() {
                 {!customerId && <input className="input input-bordered input-sm" placeholder="Walk-in name (optional)" value={walkInName} onChange={(e) => setWalkInName(e.target.value)} />}
               </div>
 
-              <table className="table table-sm">
-                <thead><tr><th>Product</th><th>Qty</th><th>Unit Price</th><th className="text-right">Line Total</th><th></th></tr></thead>
-                <tbody>
-                  {lines.map((l, i) => (
-                    <tr key={i}>
-                      <td>
-                        <select className="select select-bordered select-xs" value={l.product_id} onChange={(e) => updateLine(i, { product_id: +e.target.value })}>
-                          <option value={0}>--</option>
-                          {products.map((p) => <option key={p.id} value={p.id}>{p.name} (stk: {p.quantity})</option>)}
-                        </select>
-                      </td>
-                      <td><input type="number" step="0.01" className="input input-bordered input-xs w-20" value={l.quantity} onChange={(e) => updateLine(i, { quantity: +e.target.value })} /></td>
-                      <td><input type="number" step="0.01" className="input input-bordered input-xs w-24" value={l.unit_price} onChange={(e) => updateLine(i, { unit_price: +e.target.value })} /></td>
-                      <td className="text-right">{format(l.quantity * l.unit_price)}</td>
-                      <td><button type="button" className="btn btn-xs btn-ghost" onClick={() => removeLine(i)}>×</button></td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              <button type="button" className="btn btn-xs self-start" onClick={addLine}>+ Add Line</button>
+              <div className="bg-base-200/60 rounded-lg p-3">
+                <div className="hidden md:grid grid-cols-[1fr_110px_140px_110px_40px] gap-3 px-2 pb-2 text-xs font-semibold uppercase tracking-wide opacity-60">
+                  <div>Product</div>
+                  <div>Qty</div>
+                  <div>Unit Price</div>
+                  <div className="text-right">Line Total</div>
+                  <div></div>
+                </div>
+                <div className="flex flex-col gap-2">
+                  {lines.map((l, i) => {
+                    const product = products.find((p) => p.id === l.product_id);
+                    return (
+                      <div
+                        key={i}
+                        className="grid grid-cols-1 md:grid-cols-[1fr_110px_140px_110px_40px] gap-2 md:gap-3 items-center bg-base-100 rounded-md p-2 md:p-2 shadow-sm"
+                      >
+                        <label className="form-control">
+                          <span className="label-text text-xs md:hidden">Product</span>
+                          <select
+                            className="select select-bordered select-sm w-full"
+                            value={l.product_id}
+                            onChange={(e) => updateLine(i, { product_id: +e.target.value })}
+                          >
+                            <option value={0}>-- Select product --</option>
+                            {products.map((p) => (
+                              <option key={p.id} value={p.id}>
+                                {p.name} (stk: {p.quantity})
+                              </option>
+                            ))}
+                          </select>
+                        </label>
 
-              <div className="flex justify-end gap-6 text-sm items-center">
-                <div>Profit: <span className="font-bold text-success">{format(profit)}</span></div>
-                <div>Total: <span className="font-bold">{format(total)}</span></div>
+                        <label className="form-control">
+                          <span className="label-text text-xs md:hidden">Qty</span>
+                          <input
+                            type="number"
+                            step="0.01"
+                            min={0}
+                            className="input input-bordered input-sm w-full text-right"
+                            value={l.quantity}
+                            onChange={(e) => updateLine(i, { quantity: +e.target.value })}
+                          />
+                        </label>
+
+                        <label className="form-control">
+                          <span className="label-text text-xs md:hidden">Unit Price</span>
+                          <input
+                            type="number"
+                            step="0.01"
+                            min={0}
+                            className="input input-bordered input-sm w-full text-right"
+                            value={l.unit_price}
+                            onChange={(e) => updateLine(i, { unit_price: +e.target.value })}
+                          />
+                        </label>
+
+                        <div className="flex md:block justify-between items-center">
+                          <span className="label-text text-xs md:hidden">Line Total</span>
+                          <span className="text-right font-semibold block md:text-right w-full">
+                            {format(l.quantity * l.unit_price)}
+                          </span>
+                        </div>
+
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-ghost text-error justify-self-end md:justify-self-center"
+                          onClick={() => removeLine(i)}
+                          aria-label="Remove line"
+                          title="Remove line"
+                        >
+                          ✕
+                        </button>
+
+                        {product && product.quantity < l.quantity && (
+                          <div className="col-span-full text-xs text-warning">
+                            ⚠ Only {product.quantity} in stock
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+                <button type="button" className="btn btn-sm btn-outline btn-primary mt-3" onClick={addLine}>
+                  + Add Line
+                </button>
               </div>
 
-              <div className="flex justify-end items-center gap-2 text-sm">
-                <label htmlFor="paid-input" className="label-text">Amount Paid</label>
-                <input id="paid-input" type="number" step="0.01" min={0} max={total} className="input input-bordered input-sm w-32"
-                  placeholder={String(total.toFixed(2))}
-                  value={paidAmount}
-                  onChange={(e) => setPaidAmount(e.target.value)} />
-                <button type="button" className="btn btn-xs" onClick={() => setPaidAmount(String(total))}>Full</button>
-                <button type="button" className="btn btn-xs" onClick={() => setPaidAmount("0")}>Credit</button>
+              <div className="bg-base-200/60 rounded-lg p-3 flex flex-col gap-3">
+                <div className="flex justify-between items-center text-sm">
+                  <span className="opacity-70">Profit</span>
+                  <span className="font-bold text-success text-base">{format(profit)}</span>
+                </div>
+                <div className="flex justify-between items-center text-sm border-t border-base-300 pt-2">
+                  <span className="opacity-70">Total</span>
+                  <span className="font-bold text-lg">{format(total)}</span>
+                </div>
+
+                <div className="flex flex-wrap items-center justify-between gap-2 border-t border-base-300 pt-2">
+                  <label htmlFor="paid-input" className="label-text font-medium">Amount Paid</label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      id="paid-input"
+                      type="number"
+                      step="0.01"
+                      min={0}
+                      max={total}
+                      className="input input-bordered input-sm w-32 text-right"
+                      placeholder={String(total.toFixed(2))}
+                      value={paidAmount}
+                      onChange={(e) => setPaidAmount(e.target.value)}
+                    />
+                    <button type="button" className="btn btn-xs btn-outline btn-success" onClick={() => setPaidAmount(String(total))}>Full</button>
+                    <button type="button" className="btn btn-xs btn-outline" onClick={() => setPaidAmount("0")}>Credit</button>
+                  </div>
+                </div>
+                {paidAmount !== "" && +paidAmount < total && (
+                  <div className="flex justify-between items-center text-sm text-warning font-semibold">
+                    <span>Balance due</span>
+                    <span>{format(Math.max(0, total - (+paidAmount || 0)))}</span>
+                  </div>
+                )}
               </div>
-              {paidAmount !== "" && +paidAmount < total && (
-                <div className="text-right text-sm text-warning">Balance due: {format(Math.max(0, total - (+paidAmount || 0)))}</div>
-              )}
 
               <div className="modal-action">
                 <button type="button" className="btn btn-sm" onClick={() => { setOpen(false); setEditingSaleId(null); }}>Cancel</button>

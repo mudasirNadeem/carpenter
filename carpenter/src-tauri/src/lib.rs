@@ -167,6 +167,22 @@ pub fn run() {
             ",
             kind: MigrationKind::Up,
         },
+        Migration {
+            version: 4,
+            description: "create_bonuses_table",
+            sql: "
+                CREATE TABLE IF NOT EXISTS bonuses (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    source TEXT NOT NULL,
+                    amount REAL NOT NULL,
+                    note TEXT,
+                    received_date TEXT NOT NULL DEFAULT (date('now','localtime')),
+                    user_id INTEGER REFERENCES users(id),
+                    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+                );
+            ",
+            kind: MigrationKind::Up,
+        },
     ];
 
     tauri::Builder::default()

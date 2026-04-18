@@ -125,6 +125,16 @@ export interface SupplierPayment {
   created_at: string;
 }
 
+export interface Bonus {
+  id: number;
+  source: string;
+  amount: number;
+  note: string | null;
+  received_date: string;
+  user_id: number | null;
+  created_at: string;
+}
+
 export type OrderStatus = "pending" | "in_progress" | "completed" | "cancelled";
 export interface Order {
   id: number;
@@ -143,6 +153,7 @@ export const PERMISSIONS: Record<Role, string[]> = {
     "inventory.view", "inventory.edit",
     "sales.view", "sales.create",
     "expenses.view", "expenses.edit",
+    "bonuses.view", "bonuses.edit",
     "reports.view",
     "customers.view", "customers.edit",
     "orders.view", "orders.edit",
@@ -157,6 +168,7 @@ export const PERMISSIONS: Record<Role, string[]> = {
     "inventory.view",
     "sales.view", "sales.create",
     "expenses.view",
+    "bonuses.view", "bonuses.edit",
     "reports.view",
     "customers.view", "customers.edit",
     "orders.view", "orders.edit",
