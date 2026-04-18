@@ -1,2 +1,107 @@
 @import "tailwindcss";
 @plugin "daisyui";
+
+.modal-box {
+  padding: 1.5rem 1.75rem;
+  border-radius: 0.875rem;
+  box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.35), 0 2px 6px rgba(0, 0, 0, 0.08);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+
+.modal-box > h3:first-child {
+  font-size: 1.125rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  padding-bottom: 0.75rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid color-mix(in oklab, currentColor 12%, transparent);
+}
+
+.modal-box .input,
+.modal-box .select,
+.modal-box .textarea {
+  font-size: 0.9375rem;
+  border-radius: 0.5rem;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  width: 100%;
+}
+
+.modal-box .input:not(.input-xs):not(.input-sm):not(.input-lg),
+.modal-box .select:not(.select-xs):not(.select-sm):not(.select-lg) {
+  height: 2.5rem;
+  padding-inline: 0.875rem;
+}
+
+.modal-box .textarea {
+  min-height: 5rem;
+  padding: 0.625rem 0.875rem;
+  line-height: 1.5;
+}
+
+.modal-box .input:focus,
+.modal-box .select:focus,
+.modal-box .textarea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-primary) 25%, transparent);
+}
+
+.modal-box .input::placeholder,
+.modal-box .textarea::placeholder {
+  color: color-mix(in oklab, currentColor 45%, transparent);
+  font-weight: 400;
+}
+
+.modal-box .modal-action {
+  margin-top: 1.25rem;
+  padding-top: 0.875rem;
+  border-top: 1px solid color-mix(in oklab, currentColor 12%, transparent);
+  gap: 0.5rem;
+}
+
+.modal-box .btn:not(.btn-xs):not(.btn-sm):not(.btn-lg) {
+  min-height: 2.25rem;
+  height: 2.25rem;
+  font-size: 0.875rem;
+  border-radius: 0.5rem;
+}
+
+.modal-box .btn-sm {
+  border-radius: 0.5rem;
+}
+
+.modal-box label.label,
+.modal-box .form-control > .label {
+  padding-bottom: 0.25rem;
+  padding-top: 0;
+}
+
+.modal-box .form-control > .label .label-text,
+.modal-box .label .label-text {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  opacity: 0.85;
+}
+
+.modal-box p {
+  font-size: 0.875rem;
+  line-height: 1.55;
+}
+
+.modal-box table {
+  font-size: 0.875rem;
+}
+
+.modal-box table th {
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  opacity: 0.7;
+}
+
+.modal-box .alert {
+  font-size: 0.8125rem;
+  border-radius: 0.5rem;
+}
