@@ -4,7 +4,7 @@ import { can } from "./types";
 import { useNotifications } from "./notifications";
 import ChangePasswordModal from "./ChangePasswordModal";
 
-export type PageKey = "dashboard" | "products" | "inventory" | "sales" | "credit" | "expenses" | "customers" | "orders" | "reports" | "users" | "settings";
+export type PageKey = "dashboard" | "products" | "inventory" | "sales" | "credit" | "purchases" | "suppliers" | "expenses" | "customers" | "orders" | "reports" | "users" | "settings";
 
 const NAV: { key: PageKey; label: string; perm: string; badge?: "lowStock" | "pendingOrders" }[] = [
   { key: "dashboard",  label: "Dashboard",  perm: "products.view" },
@@ -12,6 +12,8 @@ const NAV: { key: PageKey; label: string; perm: string; badge?: "lowStock" | "pe
   { key: "inventory",  label: "Inventory",  perm: "inventory.view", badge: "lowStock" },
   { key: "sales",      label: "Sales",      perm: "sales.view" },
   { key: "credit",     label: "Credit",     perm: "credit.view" },
+  { key: "purchases",  label: "Purchases",  perm: "purchases.view" },
+  { key: "suppliers",  label: "Suppliers",  perm: "suppliers.view" },
   { key: "expenses",   label: "Expenses",   perm: "expenses.view" },
   { key: "customers",  label: "Customers",  perm: "customers.view" },
   { key: "orders",     label: "Orders",     perm: "orders.view", badge: "pendingOrders" },

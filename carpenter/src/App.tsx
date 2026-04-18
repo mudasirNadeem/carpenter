@@ -10,6 +10,8 @@ import Products from "./pages/Products";
 import Inventory from "./pages/Inventory";
 import Sales from "./pages/Sales";
 import Credit from "./pages/Credit";
+import Purchases from "./pages/Purchases";
+import Suppliers from "./pages/Suppliers";
 import Expenses from "./pages/Expenses";
 import Customers from "./pages/Customers";
 import Orders from "./pages/Orders";
@@ -38,6 +40,8 @@ function Shell() {
     case "inventory": content = <Inventory />; break;
     case "sales": content = <Sales />; break;
     case "credit": content = <Credit />; break;
+    case "purchases": content = <Purchases />; break;
+    case "suppliers": content = <Suppliers />; break;
     case "expenses": content = <Expenses />; break;
     case "customers": content = <Customers />; break;
     case "orders": content = <Orders />; break;
