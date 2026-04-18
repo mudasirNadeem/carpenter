@@ -3,10 +3,12 @@ import { getDb } from "../db";
 import { useAuth } from "../auth";
 import { can, type Expense } from "../types";
 import { useSettings } from "../settings";
+import { useConfirm } from "../ConfirmDialog";
 
 export default function Expenses() {
   const { user } = useAuth();
   const { format } = useSettings();
+  const confirm = useConfirm();
   const canEdit = can(user?.role, "expenses.edit");
   const [items, setItems] = useState<Expense[]>([]);
   const [open, setOpen] = useState(false);
@@ -27,7 +29,13 @@ export default function Expenses() {
   }
 
   async function remove(e: Expense) {
-    if (!confirm("Delete this expense?")) return;
+    const ok = await confirm({
+      title: "Delete expense",
+      message: `Delete this ${e.category} expense of ${format(e.amount)}?`,
+      confirmLabel: "Delete",
+      danger: true,
+    });
+    if (!ok) return;
     const db = await getDb();
     await db.execute("DELETE FROM expenses WHERE id = ?", [e.id]);
     load();

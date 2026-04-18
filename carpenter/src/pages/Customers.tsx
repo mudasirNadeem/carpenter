@@ -3,10 +3,12 @@ import { getDb } from "../db";
 import { useAuth } from "../auth";
 import { can, type Customer, type Sale } from "../types";
 import { useSettings } from "../settings";
+import { useConfirm } from "../ConfirmDialog";
 
 export default function Customers() {
   const { user } = useAuth();
   const { format } = useSettings();
+  const confirm = useConfirm();
   const canEdit = can(user?.role, "customers.edit");
   const [items, setItems] = useState<Customer[]>([]);
   const [form, setForm] = useState({ name: "", phone: "" });
@@ -37,7 +39,13 @@ export default function Customers() {
   }
 
   async function remove(c: Customer) {
-    if (!confirm(`Delete ${c.name}?`)) return;
+    const ok = await confirm({
+      title: "Delete customer",
+      message: `Delete ${c.name}? Their sales history will remain, but the customer record will be removed.`,
+      confirmLabel: "Delete",
+      danger: true,
+    });
+    if (!ok) return;
     const db = await getDb();
     await db.execute("DELETE FROM customers WHERE id = ?", [c.id]);
     if (selected?.id === c.id) { setSelected(null); setHistory([]); }

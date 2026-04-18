@@ -3,10 +3,12 @@ import { getDb } from "../db";
 import { useAuth } from "../auth";
 import { useSettings } from "../settings";
 import { can, type Purchase, type Supplier } from "../types";
+import { useConfirm } from "../ConfirmDialog";
 
 export default function Suppliers() {
   const { user } = useAuth();
   const { format } = useSettings();
+  const confirm = useConfirm();
   const canEdit = can(user?.role, "suppliers.edit");
   const [items, setItems] = useState<Supplier[]>([]);
   const [balances, setBalances] = useState<Record<number, { balance: number; purchases: number }>>({});
@@ -56,7 +58,13 @@ export default function Suppliers() {
   async function remove(s: Supplier) {
     const bal = balances[s.id];
     if (bal?.purchases > 0) { alert(`Cannot delete — supplier has ${bal.purchases} purchase(s).`); return; }
-    if (!confirm(`Delete ${s.name}?`)) return;
+    const ok = await confirm({
+      title: "Delete supplier",
+      message: `Delete ${s.name}?`,
+      confirmLabel: "Delete",
+      danger: true,
+    });
+    if (!ok) return;
     const db = await getDb();
     await db.execute("DELETE FROM suppliers WHERE id = ?", [s.id]);
     if (selected?.id === s.id) { setSelected(null); setHistory([]); }

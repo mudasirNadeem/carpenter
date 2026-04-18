@@ -3,6 +3,7 @@ import { getDb, withTransaction } from "../db";
 import { useAuth } from "../auth";
 import { can, type Customer, type Payment, type PaymentStatus, type Product, type Sale, type SaleItem } from "../types";
 import { useSettings } from "../settings";
+import { useConfirm } from "../ConfirmDialog";
 import Receipt from "../Receipt";
 
 interface Line { product_id: number; quantity: number; unit_price: number; unit_cost: number; }
@@ -10,6 +11,7 @@ interface Line { product_id: number; quantity: number; unit_price: number; unit_
 export default function Sales() {
   const { user } = useAuth();
   const { settings, format } = useSettings();
+  const confirm = useConfirm();
   const canCreate = can(user?.role, "sales.create");
   const [sales, setSales] = useState<Sale[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
@@ -64,7 +66,13 @@ export default function Sales() {
         ? p.quantity + (await getOldQty(editingSaleId, l.product_id))
         : p.quantity;
       if (l.quantity > available) {
-        if (!confirm(`${p.name}: selling ${l.quantity} but only ${available} in stock. Proceed?`)) return;
+        const ok = await confirm({
+          title: "Stock shortage",
+          message: `${p.name}: selling ${l.quantity} but only ${available} in stock. Proceed anyway?`,
+          confirmLabel: "Proceed",
+          danger: true,
+        });
+        if (!ok) return;
       }
     }
     const paid = Math.max(0, Math.min(total, Number(paidAmount === "" ? total : paidAmount) || 0));
@@ -157,7 +165,13 @@ export default function Sales() {
   }
 
   async function deleteSale(s: Sale) {
-    if (!confirm(`Delete Sale #${s.id}? Stock will be restored and all payments for this sale will be removed.`)) return;
+    const ok = await confirm({
+      title: "Delete sale",
+      message: `Delete Sale #${s.id}?\nStock will be restored and all payments for this sale will be removed.`,
+      confirmLabel: "Delete",
+      danger: true,
+    });
+    if (!ok) return;
     try {
       await withTransaction(async (db) => {
         const items = await db.select<SaleItem[]>("SELECT * FROM sale_items WHERE sale_id = ?", [s.id]);

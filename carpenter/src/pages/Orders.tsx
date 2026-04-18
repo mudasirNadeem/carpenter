@@ -3,12 +3,14 @@ import { getDb } from "../db";
 import { useAuth } from "../auth";
 import { can, type Customer, type Order, type OrderStatus } from "../types";
 import { useSettings } from "../settings";
+import { useConfirm } from "../ConfirmDialog";
 
 const STATUSES: OrderStatus[] = ["pending", "in_progress", "completed", "cancelled"];
 
 export default function Orders() {
   const { user } = useAuth();
   const { format } = useSettings();
+  const confirm = useConfirm();
   const canEdit = can(user?.role, "orders.edit");
   const [items, setItems] = useState<Order[]>([]);
   const [customers, setCustomers] = useState<Customer[]>([]);
@@ -49,7 +51,13 @@ export default function Orders() {
   }
 
   async function remove(o: Order) {
-    if (!confirm("Delete this order?")) return;
+    const ok = await confirm({
+      title: "Delete order",
+      message: `Delete order #${o.id}${o.description ? ` — ${o.description}` : ""}?`,
+      confirmLabel: "Delete",
+      danger: true,
+    });
+    if (!ok) return;
     const db = await getDb();
     await db.execute("DELETE FROM orders WHERE id = ?", [o.id]);
     load();

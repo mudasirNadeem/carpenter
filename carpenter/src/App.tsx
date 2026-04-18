@@ -3,6 +3,7 @@ import { AuthProvider, useAuth } from "./auth";
 import { runAutoBackupIfDue } from "./backup";
 import { SettingsProvider } from "./settings";
 import { NotificationsProvider } from "./notifications";
+import { ConfirmProvider } from "./ConfirmDialog";
 import Login from "./pages/Login";
 import Layout, { PageKey } from "./Layout";
 import Dashboard from "./pages/Dashboard";
@@ -58,7 +59,9 @@ export default function App() {
     <AuthProvider>
       <SettingsProvider>
         <NotificationsProvider>
-          <Shell />
+          <ConfirmProvider>
+            <Shell />
+          </ConfirmProvider>
         </NotificationsProvider>
       </SettingsProvider>
     </AuthProvider>

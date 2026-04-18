@@ -3,6 +3,7 @@ import { getDb } from "../db";
 import { useAuth } from "../auth";
 import { can, type Product } from "../types";
 import { useSettings } from "../settings";
+import { useConfirm } from "../ConfirmDialog";
 
 const EMPTY: Omit<Product, "id" | "created_at"> = {
   name: "", type: "sheet", cost_price: 0, sale_price: 0, quantity: 0, size: "", material: "", low_stock_threshold: 5,
@@ -11,6 +12,7 @@ const EMPTY: Omit<Product, "id" | "created_at"> = {
 export default function Products() {
   const { user } = useAuth();
   const { format } = useSettings();
+  const confirm = useConfirm();
   const [items, setItems] = useState<Product[]>([]);
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<Product | null>(null);
@@ -48,10 +50,27 @@ export default function Products() {
   }
 
   async function remove(p: Product) {
-    if (!confirm(`Delete "${p.name}"? This also removes its stock history.`)) return;
-    const db = await getDb();
-    await db.execute("DELETE FROM products WHERE id = ?", [p.id]);
-    load();
+    const ok = await confirm({
+      title: "Delete product",
+      message: `Delete "${p.name}"? This also removes its stock history.`,
+      confirmLabel: "Delete",
+      danger: true,
+    });
+    if (!ok) return;
+    try {
+      const db = await getDb();
+      const saleRefs = await db.select<{ c: number }[]>("SELECT COUNT(*) as c FROM sale_items WHERE product_id = ?", [p.id]);
+      const purchaseRefs = await db.select<{ c: number }[]>("SELECT COUNT(*) as c FROM purchase_items WHERE product_id = ?", [p.id]);
+      if ((saleRefs[0]?.c ?? 0) > 0 || (purchaseRefs[0]?.c ?? 0) > 0) {
+        alert(`Cannot delete "${p.name}" — it is used in ${saleRefs[0]?.c ?? 0} sale(s) and ${purchaseRefs[0]?.c ?? 0} purchase(s). Remove those records first, or keep the product.`);
+        return;
+      }
+      await db.execute("DELETE FROM stock_movements WHERE product_id = ?", [p.id]);
+      await db.execute("DELETE FROM products WHERE id = ?", [p.id]);
+      load();
+    } catch (err: any) {
+      alert(`Delete failed: ${err.message ?? err}`);
+    }
   }
 
   const filtered = items.filter((p) => p.name.toLowerCase().includes(query.toLowerCase()) || p.type.toLowerCase().includes(query.toLowerCase()));
