@@ -12,8 +12,9 @@ const NAV: { key: PageKey; label: string; perm: string; badge?: "lowStock" | "pe
   { key: "inventory",  label: "Inventory",  perm: "inventory.view", badge: "lowStock" },
   { key: "sales",      label: "Sales",      perm: "sales.view" },
   { key: "credit",     label: "Credit",     perm: "credit.view" },
-  { key: "purchases",  label: "Purchases",  perm: "purchases.view" },
-  { key: "suppliers",  label: "Suppliers",  perm: "suppliers.view" },
+  // Hidden — bonuses come from the company to us; we don't manage supplier payouts here.
+  // { key: "purchases",  label: "Purchases",  perm: "purchases.view" },
+  // { key: "suppliers",  label: "Suppliers",  perm: "suppliers.view" },
   { key: "expenses",   label: "Expenses",   perm: "expenses.view" },
   { key: "customers",  label: "Customers",  perm: "customers.view" },
   { key: "orders",     label: "Orders",     perm: "orders.view", badge: "pendingOrders" },
